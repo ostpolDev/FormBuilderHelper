@@ -316,6 +316,6 @@ values: [
 
 ## Demos
 
-[Demo Files](https://ostpol.it/)
+[Demo Files](https://github.com/ostpolDev/FormBuilderHelper/tree/master/Demo)
 
-[Interactive Demo](https://ostpol.it/FormBuilderHelper/demo.html)
+[Interactive Demo](https://ostpol.it/FormBuilderHelper)
