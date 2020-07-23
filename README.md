@@ -48,7 +48,7 @@ In this example, the default layout for the Text field is changed
 let builder = new FormBuilder();
 
 builder.config({
-    general: `
+    text: `
         <div class="field">
             <label class="label">{label}</label>
             <div class="control">
@@ -80,21 +80,21 @@ The following config will change the HTML output to
 </div>
 ```
 
-The `general` field will apply for text and number input fields. If a `general` and a `number` config change is given,
-the builder will choose the `number` field for the number inputs.
-
 These are default types:
 
 Name | Effected | Preferred
 --- | --- | ---
-general | text, number | false
 text | text | true
 number | number | true
 checkbox | checkbox | true
-radio | radio | true
+radio_pre * | radio | true
+radio * | radio | true
+radio_post * | radio | true
 dropdown | select | true
 textarea | textarea | true
 button | button | true
+
+\* Radio buttons have to be defined in 3 parts. The container (pre), the actual radio input (radio) and the closing of the container (post)
 
 ## Variables
 
@@ -109,7 +109,7 @@ Example:
 let builder = new FormBuilder();
 
 builder.config({
-    general: `
+    text: `
         <div class="field">
             <label class="label">{label}</label>
             <div class="control">
@@ -195,7 +195,6 @@ builder.elements // Gets the individual form elements and their data
 
 ```javascript
 builder.config({ // Change HTML Layouts
-    general: String,
     text: String,
     number: String,
     checkbox: String,
@@ -239,13 +238,14 @@ Here are all the default HTML Layouts:
 **Checkbox**
 ```html
 <div class="field">
-    <input type="{type}" name="{name}" id="{id}">
-    <label>{label}</label>
+    <input type="{type}" name="{name}" id="{id}", checked="{checked}">
+    <label for="{id}">{label}</label>
 </div>
 ```
 
 **Radio**
 
+Radio buttons have to be defined in 3 parts. The container (pre), the actual radio input (radio) and the closing of the container (post)
 Radio fields are special because they require a string array named `labels`
 
 e.g.:
@@ -263,7 +263,7 @@ labels: [
 ```html
 <div class="field">
     <input type="{type}" name="{name}" id="{id.0}">
-    <label>{label.0}</label>
+    <label>{label}</label>
 </div>
 ```
 
@@ -271,6 +271,8 @@ labels: [
 
 Dropdown fields are also special because they require an array named `values`. Each value
 is an object containing a `name` and `value`.
+
+The HTML template also requires a variable named `content`, wich gets replaced by the options
 
 e.g.:
 
@@ -287,8 +289,10 @@ values: [
 
 ```html
 <div class="field">
-    <input type="{type}" name="{name}" id="{id.0}">
-    <label>{label.0}</label>
+    <label>{label}</label>
+    <select name="{name}" id="{id.0}">
+        {content}
+    </select>
 </div>
 ```
 
