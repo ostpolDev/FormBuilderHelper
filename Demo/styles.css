@@ -28,6 +28,11 @@ a {
     color: #006eff;
 }
 
+code {
+    border-radius: 3px;
+    padding: 3em;
+}
+
 /* Forms */
 
 .field {

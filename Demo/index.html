@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=,, initial-scale=1.0">
     <title>Form Builder Helper Demo</title>
     <link rel="stylesheet" href="styles.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.1.1/build/styles/atelier-cave-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.1.1/build/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
     <div class="container">
@@ -14,8 +18,100 @@
         <div class="section">
             <h3>Demo form</h3>
 
-            <form onsubmit="alert('Test form submitted to nowhere')" id="demoForm"></form>
+            <div id="demoForm"></div>
 
+        </div>
+
+        <hr>
+
+        <div class="section">
+            <h3>JavaScript code</h3>
+            <p>This is the code used to generate the form above</p>
+            <br>
+            <pre>
+                <code class="javascript">
+let builder = new FormBuilder();
+
+builder.addTextField({
+    label: "Name",
+    placeholder: "Your first name",
+    value: "",
+    info: "Not shown publicly",
+    name: "name"
+})
+
+builder.addTextField({
+    label: "Last Name",
+    placeholder: "Your last name",
+    info: "Also not shown publicly",
+    name: "lastName"
+})
+
+builder.addNumberField({
+    label: "Age",
+    placeholder: "Please enter your age",
+    info: "You must be at least 13 and 130 at most",
+    value: 13,
+    min: 13,
+    max: 130
+})
+
+builder.addNumberField({ // This is to show the step functionality
+    label: "Pi",
+    placeholder: Math.PI.toString(),
+    info: "Please enter pi up to 4 decimal places",
+    min: 0,
+    max: 5,
+    step: 0.0001
+})
+
+builder.addRadioField({
+    name: "gender",
+    labels: [
+        "Male", "Female", "Other"
+    ],
+    label: "Gender"
+})
+
+builder.addDropdownField({
+    label: "Choose a language",
+    name: "language",
+    values: [
+        {"name": "English", "value": "en"},
+        {"name": "Deutsch", "value": "de"},
+        {"name": "한국어", "value": "ko"},
+        {"name": "日本人", "value": "jp"},
+        {"name": "中文", "value": "cn"},
+    ]
+})
+
+builder.addTextareaField({
+    label: "About",
+    placeholder: "Write something about yourself...",
+    info: "This is optional",
+    name: "about"
+})
+
+builder.addCheckboxField({
+    label: "I agree to the Terms and Conditions",
+    name: "agree"
+})
+
+builder.addButton({
+    label: "Click Me",
+    name: "submit",
+    type: "submit"
+}, clickButton)
+
+builder.append("#demoForm")
+
+console.log("Resulted elements:",builder.elements)
+
+function clickButton() {
+    alert("You clicked me!")
+}
+                </code>
+            </pre>
         </div>
     </div>
     

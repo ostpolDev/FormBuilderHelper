@@ -19,6 +19,7 @@ builder.addNumberField({
     label: "Age",
     placeholder: "Please enter your age",
     info: "You must be at least 13 and 130 at most",
+    name: "age",
     value: 13,
     min: 13,
     max: 130
@@ -28,6 +29,7 @@ builder.addNumberField({ // This is to show the step functionality
     label: "Pi",
     placeholder: Math.PI.toString(),
     info: "Please enter pi up to 4 decimal places",
+    name: "pi",
     min: 0,
     max: 5,
     step: 0.0001
@@ -76,5 +78,6 @@ builder.append("#demoForm")
 console.log("Resulted elements:",builder.elements)
 
 function clickButton() {
-    alert("You clicked me!")
+    // alert("You clicked me!")
+    console.log(builder.Evaluate());
 }

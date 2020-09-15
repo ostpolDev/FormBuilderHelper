@@ -67,7 +67,7 @@ class FormBuilder {
             id: id
         }, config.custom);
         html = replaceValues(html, obj)
-        this.#elements.push(new HtmlElement(html, id, obj, true))
+        this.#elements.push(new HtmlElement(html, id, obj, true, "text"))
     }
 
     addNumberField(config) {
@@ -86,7 +86,7 @@ class FormBuilder {
             id: id
         }, config.custom)
         html = replaceValues(html, obj);
-        this.#elements.push(new HtmlElement(html, id, obj, true));
+        this.#elements.push(new HtmlElement(html, id, obj, true, "number"));
     }
 
     addCheckboxField(config) {
@@ -100,7 +100,7 @@ class FormBuilder {
             id: id
         }, config.custom)
         html = replaceValues(html, obj);
-        this.#elements.push(new HtmlElement(html, id, obj, true));
+        this.#elements.push(new HtmlElement(html, id, obj, true, "checkbox"));
     }
 
     addRadioField(config) {
@@ -123,13 +123,13 @@ class FormBuilder {
 
                 html += _html;
 
-                this.#elements.push(new HtmlElement(_html, id, obj, false));
+                this.#elements.push(new HtmlElement(_html, id, obj, false, "radio"));
             })
 
             html += this.#customConfig.radio_post || defaults.radio_post;
             html = replaceValues(html, obj);
 
-            this.#elements.push(new HtmlElement(html, _id, obj, true));
+            this.#elements.push(new HtmlElement(html, _id, obj, true, "radio"));
         } else {
             console.error("[FormBuilder] Could not create radio input: no [labels] given");
         }
@@ -151,7 +151,7 @@ class FormBuilder {
 
             obj.content = content;
             html = replaceValues(html, obj);
-            this.#elements.push(new HtmlElement(html, id, obj, true));
+            this.#elements.push(new HtmlElement(html, id, obj, true, "dropdown"));
         } else {
             console.error("[FormBuilder] Could not create dropdown: no [values] given");
         }
@@ -170,7 +170,7 @@ class FormBuilder {
         }, config.custom)
 
         html = replaceValues(html, obj);
-        this.#elements.push(new HtmlElement(html, id, obj, true));
+        this.#elements.push(new HtmlElement(html, id, obj, true, "textarea"));
     }
 
     addButton(config, cb) {
@@ -184,7 +184,7 @@ class FormBuilder {
         }, config.custom)
         
         html = replaceValues(html, obj);
-        let elem = new HtmlElement(html, id, obj, true);
+        let elem = new HtmlElement(html, id, obj, true, "button");
         if (cb) {
             elem.setCallback(cb)
         }
@@ -198,7 +198,51 @@ class FormBuilder {
             id: id
         }, config.custom);
         html = replaceValues(html, config);
-        this.#elements.push(new HtmlElement(html, id, obj, true));
+        this.#elements.push(new HtmlElement(html, id, obj, true, "custom"));
+    }
+
+    // EVALUATION
+
+    Evaluate() {
+        let returns = [];
+        let fields = [];
+        this.#elements.forEach(e => { 
+            let add = true;
+            let returnElement = {
+                name: e.data.name,
+                id: e.id,
+                type: e.type
+            }
+            if (e.type == "text" || e.type == "number" || e.type == "textarea") {
+                let _e = document.getElementById(e.id);
+                returnElement.value = _e.value;
+            } else if (e.type == "radio") {
+                if (!returns.find(x => x.name == e.data.name)) {
+                    let _e = document.querySelector('input[name="'+e.data.name+'"]:checked');
+                    if (_e) {
+                        returnElement.value = _e.value;
+                    }
+                } else {
+                    add = false;
+                }
+            } else if (e.type == "dropdown") {
+                let _e = document.getElementById(e.id);
+                returnElement.value = _e.options[_e.selectedIndex].value;
+            } else if (e.type == "checkbox") {
+                let _e = document.getElementById(e.id);
+                returnElement.value = _e.checked;
+            }
+            
+            if (add) {
+                returns.push(returnElement);
+                fields.push(returnElement.name);
+            }
+        })
+
+        return {
+            fields: fields,
+            result: returns,
+        };
     }
 }
 
@@ -207,14 +251,16 @@ class HtmlElement {
     id = "";
     data = {};
     draw = true;
+    type = "";
 
     #callback;
 
-    constructor(code, id, data, draw) {
+    constructor(code, id, data, draw, type) {
         this.code = code;
         this.id = id;
         this.data = data;
         this.draw = draw;
+        this.type = type;
     }
 
     setCallback(callback) {
@@ -271,9 +317,9 @@ let defaults = {
     "number": `<div class="field"><label>{label}</label><input type="{type}" name="{name}" value="{value}" placeholder="{placeholder}" id="{id}" min={min} max={max} step={step}><p class="info">{info}</p></div>`,
     "checkbox": `<div class="field"><input type="{type}" name="{name}" id="{id}" {checked}><label for="{id}" class="checkboxLabel">{label}</label></div>`,
     "radio_pre": `<div class="field"><label>{baseLabel}</label>`,
-    "radio": `<input type="{type}" name="{name}" id="{id}"><label for="{id}" class="radioLabel">{label}</label>`,
+    "radio": `<input type="{type}" name="{name}" value="{label}" id="{id}"><label for="{id}" class="radioLabel">{label}</label>`,
     "radio_post": `</div>`,
-    "dropdown": `<div class="field"><label>{label}</label><select name="{name}" id="{id.0}">{content}</select></div>`,
+    "dropdown": `<div class="field"><label>{label}</label><select name="{name}" id="{id}">{content}</select></div>`,
     "textarea": `<div class="field"><label>{label}</label><textarea name="{name}" placeholder="{placeholder}" id="{id}">{value}</textarea><p class="info">{info}</p></div>`,
     "button": `<div class="field"><button id={id} name={name} type={type}>{value}</button></div>`
 }
